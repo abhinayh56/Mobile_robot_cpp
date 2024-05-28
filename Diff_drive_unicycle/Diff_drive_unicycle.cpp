@@ -8,28 +8,10 @@ void Diff_drive_unicycle::set_param(double r_, double L_){
     L = L_;
 }
 
-void Diff_drive_unicycle::set_v_max(double V_max_){
-    V_max = V_max_;
-    w_lr_max = V_max/r;
-    W_max = 2.0*V_max/L;
-}
-
-void Diff_drive_unicycle::set_w_max(double W_max_){
-    W_max = W_max_;
-    V_max = W_max*L/2.0;
-    w_lr_max = V_max/r;
-}
-
-double Diff_drive_unicycle::get_v_max(){
-    return V_max;
-}
-
-double Diff_drive_unicycle::get_w_max(){
-    return W_max;
-}
-
-double Diff_drive_unicycle::get_wlr_max(){
-    return w_lr_max;
+void Diff_drive_unicycle::set_specs(double vc_max_, double wc_max_){
+    vc_max = vc_max_;
+    wc_max = wc_max_;
+    w_lr_max = vc_max/r;
 }
 
 void Diff_drive_unicycle::set_r(double r_){
@@ -40,6 +22,18 @@ void Diff_drive_unicycle::set_L(double L_){
     L = L_;
 }
 
+void Diff_drive_unicycle::set_vc_max(double vc_max_){
+    vc_max = vc_max_;
+    w_lr_max = vc_max/r;
+    wc_max = 2.0*vc_max/L;
+}
+
+void Diff_drive_unicycle::set_wc_max(double wc_max_){
+    wc_max = wc_max_;
+    vc_max = wc_max*L/2.0;
+    w_lr_max = vc_max/r;
+}
+
 double Diff_drive_unicycle::get_r(){
     return r;
 }
@@ -48,68 +42,80 @@ double Diff_drive_unicycle::get_L(){
     return L;
 }
 
-void Diff_drive_unicycle::uni2ddr(double Vc_, double Wc_, double* wr, double* wl){
-    double Vc = Vc_;
-    double Wc = Wc_;
-    update_domain_vw(Vc_, Wc_, &Vc, &Wc);
+double Diff_drive_unicycle::get_wlr_max(){
+    return w_lr_max;
+}
+
+double Diff_drive_unicycle::get_vc_max(){
+    return vc_max;
+}
+
+double Diff_drive_unicycle::get_wc_max(){
+    return wc_max;
+}
+
+void Diff_drive_unicycle::uni2ddr(double vc, double wc, double* wr, double* wl){
+    double vc_ = vc;
+    double wc_ = wc;
+    update_domain_vw(vc, wc, &vc_, &wc_);
     
-    *wr = (Vc + Wc*L*0.5) / r;
-    *wl = (Vc - Wc*L*0.5) / r;
+    *wr = (vc_ + wc_*L*0.5) / r;
+    *wl = (vc_ - wc_*L*0.5) / r;
 }
 
-double Diff_drive_unicycle::get_wr(double Vc, double Wc){
-    return (Vc + Wc*L*0.5) / r;
+double Diff_drive_unicycle::get_wr(double vc, double wc){
+    return (vc + wc*L*0.5) / r;
 }
 
-double Diff_drive_unicycle::get_wl(double Vc, double Wc){
-    return (Vc - Wc*L*0.5) / r;
+double Diff_drive_unicycle::get_wl(double vc, double wc){
+    return (vc - wc*L*0.5) / r;
 }
 
-void Diff_drive_unicycle::ddr2uni(double wr, double wl, double* Vc, double* Wc){
-    *Vc = (wr + wl)*r*0.5;
-    *Wc = (wr - wl)*r/L;
+void Diff_drive_unicycle::ddr2uni(double wr, double wl, double* vc, double* wc){
+    *vc = (wr + wl)*r*0.5;
+    *wc = (wr - wl)*r/L;
 }
 
-double Diff_drive_unicycle::get_Vc(double wr, double wl){
+double Diff_drive_unicycle::get_vc(double wr, double wl){
     return (wr + wl)*r*0.5;
 }
 
-double Diff_drive_unicycle::get_Wc(double wr, double wl){
+double Diff_drive_unicycle::get_wc(double wr, double wl){
     return (wr - wl)*r/L;
 }
 
-void Diff_drive_unicycle::update_domain_vw(double V_in, double W_in, double* V_out, double* W_out){
-    double V_n = V_in;
-    double W_n = W_in;
+void Diff_drive_unicycle::update_domain_vw(double vc_in, double wc_in, double* vc_out, double* wc_out){
+    double vc_n = vc_in;
+    double wc_n = wc_in;
 
     int region = 0;
 
-    if(W_in>=W_max){
+    if(wc_in>=wc_max){
         region = 5;
     }
-    else if(W_in <=(-W_max)){
+    else if(wc_in <=(-wc_max)){
         region = 6;
     }
-    else if(W_in>=0){
-        if(V_in>=0){
-            if(math_fun.points_A0_line_same_side(V_in, W_in, V_max, 0.0, 0.0, W_max)==false){
+    else if(wc_in>=0){
+        if(vc_in>=0){
+            if(math_fun.points_A0_line_same_side(vc_in, wc_in, vc_max, 0.0, 0.0, wc_max)==false){
                 region = 1;
             }
         }
         else{
-            if(math_fun.points_A0_line_same_side(V_in, W_in, -V_max, 0.0, 0.0, W_max)==false){
+            if(math_fun.points_A0_line_same_side(vc_in, wc_in, -vc_max, 0.0, 0.0, wc_max)==false){
                 region = 2;
             }
         }
     }
     else{
-        if(V_in>=0){
-            if(math_fun.points_A0_line_same_side(V_in, W_in, V_max, 0.0, 0.0, -W_max)==false){
+        if(vc_in>=0){
+            if(math_fun.points_A0_line_same_side(vc_in, wc_in, vc_max, 0.0, 0.0, -wc_max)==false){
                 region = 4;
             }
         }
         else{
-            if(math_fun.points_A0_line_same_side(V_in, W_in, -V_max, 0.0, 0.0, -W_max)==false){
+            if(math_fun.points_A0_line_same_side(vc_in, wc_in, -vc_max, 0.0, 0.0, -wc_max)==false){
                 region = 3;
             }
         }
@@ -117,39 +123,39 @@ void Diff_drive_unicycle::update_domain_vw(double V_in, double W_in, double* V_o
 
     switch(region){
         case 0:
-            V_n = V_in;
-            W_n = W_in;
+            vc_n = vc_in;
+            wc_n = wc_in;
             break;
         case 1:
-            V_n = math_fun.linear_map(W_in, 0.0, W_max, V_max, 0.0);
-            W_n = W_in;
+            vc_n = math_fun.linear_map(wc_in, 0.0, wc_max, vc_max, 0.0);
+            wc_n = wc_in;
             break;
         case 2:
-            V_n = math_fun.linear_map(W_in, 0.0, W_max, -V_max, 0.0);
-            W_n = W_in;
+            vc_n = math_fun.linear_map(wc_in, 0.0, wc_max, -vc_max, 0.0);
+            wc_n = wc_in;
             break;
         case 3:
-            V_n = math_fun.linear_map(W_in, 0.0, -W_max, -V_max, 0.0);
-            W_n = W_in;
+            vc_n = math_fun.linear_map(wc_in, 0.0, -wc_max, -vc_max, 0.0);
+            wc_n = wc_in;
             break;
         case 4:
-            V_n = math_fun.linear_map(W_in, 0.0, -W_max, V_max, 0.0);
-            W_n = W_in;
+            vc_n = math_fun.linear_map(wc_in, 0.0, -wc_max, vc_max, 0.0);
+            wc_n = wc_in;
             break;
         case 5:
-            V_n = 0.0;
-            W_n = W_in;
+            vc_n = 0.0;
+            wc_n = wc_in;
             break;
         case 6:
-            V_n = 0.0;
-            W_n = W_in;
+            vc_n = 0.0;
+            wc_n = wc_in;
             break;
         default:
-            V_n = V_in;
-            W_n = W_in;
+            vc_n = vc_in;
+            wc_n = wc_in;
             break;
     }
 
-    *V_out = V_n;
-    *W_out = W_n;
+    *vc_out = vc_n;
+    *wc_out = wc_n;
 }
