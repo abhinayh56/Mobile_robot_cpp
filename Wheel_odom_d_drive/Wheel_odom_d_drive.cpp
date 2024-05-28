@@ -1,20 +1,20 @@
-#include "Wheel_odom.h"
+#include "Wheel_odom_d_drive.h"
 
-Wheel_odom::Wheel_odom(){
+Wheel_odom_d_drive::Wheel_odom_d_drive(){
 }
 
-void Wheel_odom::set_param(long N_, double N_g_, double r_, double L_){
+void Wheel_odom_d_drive::set_param(long N_, double N_g_, double r_, double L_){
     N = N_;
     N_g = N_g_;
     r = r_;
     L = L_;
 }
 
-void Wheel_odom::set_dt(double dt_){
+void Wheel_odom_d_drive::set_dt(double dt_){
     dt = dt_;
 }
 
-void Wheel_odom::update(long nr, long nl){
+void Wheel_odom_d_drive::update(long nr, long nl){
     N_L = nl;
     N_R = nr;
     w_L = const_math_2pi*(double)(N_L - N_L_pre)/((double)N*N_g*4.0*dt);
@@ -34,54 +34,54 @@ void Wheel_odom::update(long nr, long nl){
     N_R_pre = N_R;
 }
 
-void Wheel_odom::get_wheel_speed(double* wr, double* wl){
+void Wheel_odom_d_drive::get_wheel_speed(double* wr, double* wl){
     *wr = w_R;
     *wl = w_L;
 }
 
-void Wheel_odom::get_twist(double* vc, double* wc){
+void Wheel_odom_d_drive::get_twist(double* vc, double* wc){
     *vc = v;
     *wc = w;
 }
 
-void Wheel_odom::get_pose(double* xc, double* yc, double* thc){
+void Wheel_odom_d_drive::get_pose(double* xc, double* yc, double* thc){
     *xc = x;
     *yc = y;
     *thc = th;
 }
 
-void Wheel_odom::set_PPR(long N_){
+void Wheel_odom_d_drive::set_PPR(long N_){
     N = N_;
 }
 
-void Wheel_odom::set_gear_ratio(double N_g_){
+void Wheel_odom_d_drive::set_gear_ratio(double N_g_){
     N_g = N_g_;
 }
 
-void Wheel_odom::set_r(double r_){
+void Wheel_odom_d_drive::set_r(double r_){
     r = r_;
 }
 
-void Wheel_odom::set_L(double L_){
+void Wheel_odom_d_drive::set_L(double L_){
     L = L_;
 }
 
-long Wheel_odom::get_PPR(){
+long Wheel_odom_d_drive::get_PPR(){
     return N;
 }
 
-double Wheel_odom::get_gear_ratio(){
+double Wheel_odom_d_drive::get_gear_ratio(){
     return N_g;
 }
 
-double Wheel_odom::get_r(){
+double Wheel_odom_d_drive::get_r(){
     return r;
 }
 
-double Wheel_odom::get_L(){
+double Wheel_odom_d_drive::get_L(){
     return L;
 }
 
-double Wheel_odom::get_dt(){
+double Wheel_odom_d_drive::get_dt(){
     return dt;
 }

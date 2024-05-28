@@ -1,11 +1,11 @@
-#ifndef DIFF_DRIVE_UNICYCLE
-#define DIFF_DRIVE_UNICYCLE
+#ifndef D_DRIVE_UNICYCLE
+#define D_DRIVE_UNICYCLE
 
 #include "Math_functions.h"
 
-class Diff_drive_unicycle{
+class D_drive_unicycle{
     public:
-        Diff_drive_unicycle();
+        D_drive_unicycle();
         void set_param(double r_, double L_);
         void set_specs(double vc_max_, double wc_max_);
         void set_r(double r_);

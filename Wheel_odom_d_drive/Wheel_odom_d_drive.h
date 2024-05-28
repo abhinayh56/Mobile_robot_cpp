@@ -1,12 +1,12 @@
-#ifndef WHEEL_ODOM
-#define WHEEL_ODOM
+#ifndef WHEEL_ODOM_D_DRIVE_H
+#define WHEEL_ODOM_D_DRIVE_H
 
 #include <math.h>
 #include "Math_functions.h"
 
-class Wheel_odom{
+class Wheel_odom_d_drive{
     public:
-        Wheel_odom();
+        Wheel_odom_d_drive();
         void set_param(long N_, double N_g_, double r_, double L_);
         void set_dt(double dt_);
         void update(long nr, long nl);
